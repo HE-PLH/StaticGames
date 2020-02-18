@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>road map</title>
+    <style>
+        #container{
+            width:500px;
+            height: 500px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+
+<div id="container">
+
+</div>
+
+<script src="./libs/gameArea.js"></script>
+<script src="./libs/gameObjexts.js"></script>
+<script src="./libs/Douglas_CrawFord.js"></script>
+<script src="./libs/barrier.js"></script>
+<script src="./libs/rock.js"></script>
+<script src="./libs/player.js"></script>
+<script src="./libs/kiddo.js"></script>
+<script src="./libs/map.js"></script>
+<script src="./libs/test.js"></script>
+<script>
+    let map = new Map(new Area("container",500,500));
+
+    let struct = [
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+    ];
+
+    let barriers = [];
+
+    //initialize workspace
+    map.init(struct);
+
+    //set up player initial position
+    map.active_player.position = {
+        x:200,
+        y:40
+    };
+
+    map.active_player.dimensions = {
+        width:30,
+        height:60
+    };
+
+    function drawImg (position,dimensions,image = map.active_player.background,sc) {
+        let w = dimensions.width / 2,
+            h = dimensions.height / 2,
+            scale = 1,
+            sw = w * scale,
+            sh = h * scale,
+            aspect_ratio = sw / sh;
+        sh = sh * aspect_ratio;
+        map.area.ctx.drawImage(image, 0, 0, 400, 400,position.x, position.y,60, 120);
+    }
+
+    map.active_player.load_img = function () {
+        drawImg(map.active_player.position, map.active_player.dimensions,map.active_player.background,5);
+    };
+
+
+    //set up barrier images
+    let images = {
+        cars:[
+            map.getImage("roadMapMedia/images/cars/vehicle.png")
+        ],
+        background:("url(roadMapMedia/images/road1.jpg)")
+    };
+    let count = 0;
+
+
+    map.area.canvas.style.background = images.background;
+    map.active_player.background = images.cars[0];
+
+    console.log(map.active_player)
+
+    map.active_player.increment=function () {
+        let _this = map.active_player;
+        let x = 0, y = 0;
+        let bx = _this.position.x;
+        let by = _this.position.y;
+
+        if (map.key) {
+            let key = map.key.keyCode;
+            let ch = _this.incr;
+            if (key === map.arrow_up) {
+                map.key.preventDefault();
+                y += -ch;
+            }
+            if (key === map.arrow_right) {
+                map.key.preventDefault();
+                x += -ch;
+                // y += ch;
+            }
+            if (key === map.arrow_down) {
+                map.key.preventDefault();
+                y += ch;
+            }
+            if (key === map.arrow_left) {
+                map.key.preventDefault();
+                x += ch;
+                // y += ch;
+            }
+        }else {
+            y+=_this.incr;
+        }
+        _this.position = {x: bx+x, y: by+y};
+        count%=20000;
+        map.area.canvas.style.backgroundPositionY=`${(count++)}px`;
+    };
+
+</script>
+</body>
+</html>
